@@ -11,6 +11,9 @@ userRouter.post('/', async (request, response) => {
 
     const newUser = await userService.execute({ name, email, password });
 
+    // @ts-expect-error Aqui vai ocorrer um erro, mas estou ignorando
+    delete newUser.password;
+
     return response.json(newUser);
   } catch (err) {
     return response.status(400).json({ error: (err as Error).message });
