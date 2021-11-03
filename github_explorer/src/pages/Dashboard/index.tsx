@@ -24,6 +24,7 @@ const Dashboard: React.FC = () => {
     if (localStorageData) {
       return JSON.parse(localStorageData);
     }
+    return [];
   });
 
   useEffect(() => {
@@ -67,7 +68,7 @@ const Dashboard: React.FC = () => {
       </Form>
       {inputError && <InputError>{inputError}</InputError>}
       <Repositories>
-        {repositories.map(repository => (
+        {repositories?.map(repository => (
           <Link
             href="teste"
             key={repository.full_name}
