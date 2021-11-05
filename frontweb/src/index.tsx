@@ -8,3 +8,5 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById('root'),
 );
+
+// 10 - parte 1 - 10
