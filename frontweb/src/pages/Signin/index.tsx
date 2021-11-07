@@ -8,7 +8,8 @@ import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
 import * as Yup from 'yup';
 import getValidationErrors from '../../utils/getValidationErrors';
-import { useAuth } from '../../hooks/AuthContext';
+import { useAuth } from '../../hooks/auth';
+import { useToast } from '../../hooks/toast';
 
 interface SignInFormData {
   email: string;
@@ -16,8 +17,8 @@ interface SignInFormData {
 }
 
 const Signin: React.FC = () => {
-  const { user, signIn } = useAuth();
-  console.log(user);
+  const { signIn } = useAuth();
+  const { addToast } = useToast();
 
   const formRef = useRef<FormHandles>(null);
   const handleSubmit = useCallback(
@@ -31,7 +32,7 @@ const Signin: React.FC = () => {
           password: Yup.string().required('Digite sua senha'),
         });
         await schema.validate(data, { abortEarly: false });
-        signIn({
+        await signIn({
           email: data.email,
           password: data.password,
         });
@@ -41,10 +42,14 @@ const Signin: React.FC = () => {
           formRef.current?.setErrors(errors);
           return;
         }
-        // Disparar um toast
+        addToast({
+          type: 'success',
+          title: 'Erro na autenticação',
+          description: 'Ocorreu um erro ao fazer login, cheque as credenciais.',
+        });
       }
     },
-    [signIn],
+    [signIn, addToast],
   );
 
   return (
