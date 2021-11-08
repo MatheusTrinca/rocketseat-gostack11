@@ -10,6 +10,7 @@ import {
 
 interface ToastProps {
   message: ToastMessage;
+  style: any; //eslint-disable-line
 }
 
 const icons = {
@@ -18,7 +19,7 @@ const icons = {
   info: <FiInfo size={20} />,
 };
 
-const Toast: React.FC<ToastProps> = ({ message }) => {
+const Toast: React.FC<ToastProps> = ({ message, style }) => {
   const { removeToast } = useToast();
 
   useEffect(() => {
@@ -34,6 +35,7 @@ const Toast: React.FC<ToastProps> = ({ message }) => {
     <Container
       key={message.id}
       type={message.type}
+      style={style}
       hasDescription={!!message.description}
     >
       {icons[message.type || 'info']}

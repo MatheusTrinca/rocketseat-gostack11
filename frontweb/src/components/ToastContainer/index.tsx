@@ -9,20 +9,16 @@ interface ToastProps {
 }
 
 const ToastContainer: React.FC<ToastProps> = ({ messages }) => {
-  const messageWithTransitions = useTransition(
-    messages,
-    {
-      from: { right: '-120%', opacity: 0 },
-      enter: { right: '0%', opacity: 1 },
-      leave: { right: '-120%', opacity: 0 },
-    },
-
-    message => message.id,
-  );
+  const messagesWithTransitions = useTransition(messages, {
+    keys: message => message.id,
+    from: { right: '-120%', opacity: '0%' },
+    enter: { right: '0%', opacity: '100%' },
+    leave: { right: '-120%', opacity: '0%' },
+  });
   return (
     <Container>
-      {messageWithTransitions.map(message => (
-        <Toast key={message.id} message={message} />
+      {messagesWithTransitions((style, item, t) => (
+        <Toast key={t.key} style={style} message={item} />
       ))}
     </Container>
   );
