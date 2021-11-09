@@ -8,30 +8,55 @@ import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
 import * as Yup from 'yup';
 import getValidationErrors from '../../utils/getValidationErrors';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+import api from '../../services/apiClient';
+import { useToast } from '../../hooks/toast';
+
+interface UserProps {
+  name: string;
+  email: string;
+  password: string;
+}
 
 const Signup: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
+  const { addToast } = useToast();
+  const history = useHistory();
 
-  const handleSubmit = useCallback(async (data): Promise<void> => {
-    try {
-      formRef.current?.setErrors({});
-      const schema = Yup.object().shape({
-        name: Yup.string().required('Nome é obrigatório'),
-        email: Yup.string()
-          .required('Informe um email')
-          .email('Email inválido'),
-        password: Yup.string().min(6, 'No mínimo 6 dígitos '),
-      });
-      await schema.validate(data, { abortEarly: false });
-    } catch (error) {
-      if (error instanceof Yup.ValidationError) {
-        const errors = getValidationErrors(error);
-        formRef.current?.setErrors(errors);
-        return;
+  const handleSubmit = useCallback(
+    async (data: UserProps): Promise<void> => {
+      try {
+        formRef.current?.setErrors({});
+        const schema = Yup.object().shape({
+          name: Yup.string().required('Nome é obrigatório'),
+          email: Yup.string()
+            .required('Informe um email')
+            .email('Email inválido'),
+          password: Yup.string().min(6, 'No mínimo 6 dígitos '),
+        });
+        await schema.validate(data, { abortEarly: false });
+        await api.post('/users', data);
+        history.push('/');
+        addToast({
+          type: 'success',
+          title: 'Conta criada com sucesso',
+          description: 'Você já pode se logar com seu email e sua senha.',
+        });
+      } catch (error) {
+        if (error instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(error);
+          formRef.current?.setErrors(errors);
+          return;
+        }
+        addToast({
+          type: 'error',
+          title: 'Erro na criação da conta',
+          description: 'Ocorreu um erro ao criar sua conta, tente novamente.',
+        });
       }
-    }
-  }, []);
+    },
+    [addToast, history],
+  );
 
   return (
     <Container>
