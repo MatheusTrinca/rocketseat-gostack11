@@ -12,6 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 import * as Yup from 'yup';
+import api from '../../services/api';
 
 import {
   Container,
@@ -33,7 +34,7 @@ interface UserProps {
 
 const SignUp: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation();
   const passwordInputRef = useRef<TextInput>(null);
   const emailInputRef = useRef<TextInput>(null);
 
@@ -48,12 +49,12 @@ const SignUp: React.FC = () => {
         password: Yup.string().min(6, 'No mínimo 6 dígitos '),
       });
       await schema.validate(data, { abortEarly: false });
-      // await api.post('/users', data);
-      // history.push('/');
+      await api.post('/users', data);
       Alert.alert(
         'Conta criada com sucesso',
         'Você já pode se logar com seu email e sua senha.',
       );
+      navigation.goBack();
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const errors = getValidationErrors(error);

@@ -12,6 +12,7 @@ import {
 import Icon from 'react-native-vector-icons/Feather';
 
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../../hooks/auth';
 
 import {
   Container,
@@ -37,6 +38,9 @@ const SignIn: React.FC = () => {
   const navigation = useNavigation<any>();
   const formRef = useRef<FormHandles>(null);
   const passwordInputRef = useRef<TextInput>(null);
+  const { signIn, user } = useAuth();
+
+  console.log(user);
 
   const handleSignIn = useCallback(
     async (data: SignInFormData): Promise<void> => {
@@ -49,11 +53,10 @@ const SignIn: React.FC = () => {
           password: Yup.string().required('Digite sua senha'),
         });
         await schema.validate(data, { abortEarly: false });
-        // await signIn({
-        //   email: data.email,
-        //   password: data.password,
-        // });
-        // history.push('/dashboard')
+        await signIn({
+          email: data.email,
+          password: data.password,
+        });
       } catch (error) {
         if (error instanceof Yup.ValidationError) {
           const errors = getValidationErrors(error);
